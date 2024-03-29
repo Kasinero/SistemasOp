@@ -1,1 +1,35 @@
+#include <iostream>
+#include <thread>
+#include <fstream>
+#include <chrono>
+
+void cpu_bound_process() {
+    // Simula um processo intensivo de CPU
+    double result = 0;
+    for (int i = 0; i < 10000000; ++i) {
+        result += static_cast<double>(rand()) / RAND_MAX;
+    }
+    std::cout << "Processo CPU-bound finalizado. Resultado: " << result << std::endl;
+}
+
+void io_bound_process() {
+    // Simula um processo intensivo de I/O
+    std::ifstream file("dados.txt");
+    std::string data;
+    file >> data;
+    std::this_thread::sleep_for(std::chrono::seconds(2));  // Simula uma operação de I/O lenta
+    std::cout << "Processo I/O-bound finalizado." << std::endl;
+}
+
+int main() {
+    // Criar threads para processos CPU-bound e I/O-bound
+    std::thread t1(cpu_bound_process);
+    std::thread t2(io_bound_process);
+
+    // Aguardar a conclusão de ambas as threads
+    t1.join();
+    t2.join();
+
+    return 0;
+}
 
