@@ -1,0 +1,23 @@
+#include <iostream>
+#include <thread>
+#include <unistd.h>
+#include <cstdlib>
+
+void critical_process() {
+    std::cout << "Processo crítico iniciado." << std::endl;
+    // Simulação de execução do processo crítico
+    sleep(3);
+    // Simulação de falha de hardware
+    if (rand() % 2 == 0) {
+        std::cout << "Falha de hardware detectada! Abortando processo crítico." << std::endl;
+        exit(1);
+    }
+    std::cout << "Processo crítico concluído com sucesso." << std::endl;
+}
+
+int main() {
+    std::thread t1(critical_process);
+    t1.join();
+
+    return 0;
+}
