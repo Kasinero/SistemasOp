@@ -1,0 +1,46 @@
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <unistd.h>
+#include <sys/wait.h>
+
+void short_duration_process() {
+    // Processo de curta duração
+    std::cout << "Processo de curta duração iniciado." << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(3)); // Simulando uma operação curta
+    std::cout << "Processo de curta duração finalizado." << std::endl;
+}
+
+void long_duration_process() {
+    // Processo de longa duração
+    std::cout << "Processo de longa duração iniciado." << std::endl;
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::seconds(5)); // Simulando uma operação longa
+        std::cout << "Processo de longa duração ainda em execução..." << std::endl;
+    }
+}
+
+int main() {
+    // Criar processo de curta duração
+    pid_t pid_short = fork();
+    if (pid_short == 0) {
+        short_duration_process();
+        exit(0);
+    } else if (pid_short > 0) {
+        std::cout << "Processo pai aguardando o processo de curta duração." << std::endl;
+        waitpid(pid_short, NULL, 0);
+    }
+
+    // Criar processo de longa duração
+    pid_t pid_long = fork();
+    if (pid_long == 0) {
+        long_duration_process();
+        exit(0);
+    } else if (pid_long > 0) {
+        std::cout << "Processo pai aguardando o processo de longa duração." << std::endl;
+        waitpid(pid_long, NULL, 0);
+    }
+
+    std::cout << "Processo pai finalizado." << std::endl;
+    return 0;
+}
