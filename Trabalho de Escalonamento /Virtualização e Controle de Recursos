@@ -1,0 +1,23 @@
+#include <iostream>
+#include <thread>
+#include <unistd.h>
+
+void virtual_machine(int id, int cpu, int memory) {
+    std::cout << "Máquina virtual " << id << " iniciada com " << cpu << " CPU(s) e " << memory << "MB de memória." << std::endl;
+    // Simulação de carga variada na máquina virtual
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "Máquina virtual " << id << " em execução..." << std::endl;
+        sleep(2);
+    }
+    std::cout << "Máquina virtual " << id << " finalizada." << std::endl;
+}
+
+int main() {
+    std::thread vm1(virtual_machine, 1, 2, 2048); // Máquina virtual com 2 CPUs e 2048MB de memória
+    std::thread vm2(virtual_machine, 2, 4, 4096); // Máquina virtual com 4 CPUs e 4096MB de memória
+
+    vm1.join();
+    vm2.join();
+
+    return 0;
+}
