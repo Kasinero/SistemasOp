@@ -1,0 +1,27 @@
+#include <iostream>
+#include <thread>
+#include <unistd.h>
+
+void high_priority_process() {
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "Processo de alta prioridade em execução..." << std::endl;
+        sleep(1);
+    }
+}
+
+void low_priority_process() {
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "Processo de baixa prioridade em execução..." << std::endl;
+        sleep(2);
+    }
+}
+
+int main() {
+    std::thread t1(high_priority_process);
+    std::thread t2(low_priority_process);
+
+    t1.join();
+    t2.join();
+
+    return 0;
+}
