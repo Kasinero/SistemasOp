@@ -1,9 +1,7 @@
 #include <iostream>
+#include <thread>
 #include <fstream>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <cstdlib>
-#include <ctime>
+#include <chrono>
 
 void cpu_bound_process() {
     // Simula um processo intensivo de CPU
@@ -16,42 +14,21 @@ void cpu_bound_process() {
 
 void io_bound_process() {
     // Simula um processo intensivo de I/O
-    std::ifstream file("dados.txt", std::ios::in); // Corrigindo a abertura do arquivo
+    std::ifstream file("dados.txt");
     std::string data;
     file >> data;
-    usleep(2000000);  // Simula uma operação de I/O lenta
+    std::this_thread::sleep_for(std::chrono::seconds(2));  // Simula uma operação de I/O lenta
     std::cout << "Processo I/O-bound finalizado." << std::endl;
 }
 
 int main() {
-    srand(time(NULL));
+    // Criar threads para processos CPU-bound e I/O-bound
+    std::thread t1(cpu_bound_process);
+    std::thread t2(io_bound_process);
 
-    // Criar processo CPU-bound
-    pid_t pid_cpu = fork();
-    if (pid_cpu == 0) {
-        // Processo filho (CPU-bound)
-        std::cout << "Processo CPU-bound iniciado." << std::endl;
-        cpu_bound_process();
-        exit(0);
-    } else if (pid_cpu > 0) {
-        // Processo pai
-        std::cout << "Processo pai aguardando o processo CPU-bound." << std::endl;
-        waitpid(pid_cpu, NULL, 0);
-    }
+    // Aguardar a conclusão de ambas as threads
+    t1.join();
+    t2.join();
 
-    // Criar processo I/O-bound
-    pid_t pid_io = fork();
-    if (pid_io == 0) {
-        // Processo filho (I/O-bound)
-        std::cout << "Processo I/O-bound iniciado." << std::endl;
-        io_bound_process();
-        exit(0);
-    } else if (pid_io > 0) {
-        // Processo pai
-        std::cout << "Processo pai aguardando o processo I/O-bound." << std::endl;
-        waitpid(pid_io, NULL, 0);
-    }
-
-    std::cout << "Processo pai finalizado." << std::endl;
     return 0;
 }
